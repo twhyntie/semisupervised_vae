@@ -34,7 +34,7 @@ def feed_numpy_semisupervised(num_lab_batch, num_ulab_batch, x_lab, y, x_ulab):
 
 	dim = x_lab.shape[1]
 
-	for i in xrange(count):
+	for i in range(count):
 		start_lab = i * num_lab_batch
 		end_lab = start_lab + num_lab_batch
 		start_ulab = i * num_ulab_batch
@@ -50,7 +50,7 @@ def feed_numpy(batch_size, x):
 
 	dim = x.shape[1]
 
-	for i in xrange(count):
+	for i in range(count):
 		start = i * batch_size
 		end = start + batch_size
 
@@ -59,6 +59,6 @@ def feed_numpy(batch_size, x):
 def print_metrics(epoch, *metrics):
 
 	print(25*'-')
-	for metric in metrics: 
+	for metric in metrics:
 		print('[{}] {} {}: {}'.format(epoch, metric[0],metric[1],metric[2]))
 	print(25*'-')

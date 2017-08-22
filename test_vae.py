@@ -37,18 +37,20 @@ if __name__ == '__main__':
 
     print("*")
     print("*==============*")
-    print("* train_vae.py *")
+    print("* test_vae.py *")
     print("*==============*")
     print("*")
 
     # Parse the command line arguments.
     parser = argparse.ArgumentParser()
 #    parser.add_argument("architectureFilePath",   help="Path to the architecture JSON file.")
+    parser.add_argument("reloadPath",      help="Path to the model to load.", type=str)
     parser.add_argument("outputPath",      help="Path to the output folder.")
-#    parser.add_argument("--reloadpath",    help="Path to the model to load.", default="", type=str)
     parser.add_argument("-v", "--verbose", help="Increase output verbosity",  action="store_true")
     parser.add_argument("-w", "--wipe",    help="Wipe all previous output",   action="store_true")
     args = parser.parse_args()
+
+    reload_path = args.reloadPath
 
     ## The output path.
     output_path = args.outputPath
@@ -83,16 +85,17 @@ if __name__ == '__main__':
         level=lg.INFO
 
     ## Log file path.
-    log_file_path = os.path.join(LOG_DIR, 'log_train_vae.log')
+    log_file_path = os.path.join(LOG_DIR, 'log_test_vae.log')
 
     # Configure the logging.
     lg.basicConfig(filename=log_file_path, filemode='w', level=level)
 
-    lg.info(" *==============*")
-    lg.info(" * train_vae.py *")
-    lg.info(" *==============*")
+    lg.info(" *=============*")
+    lg.info(" * test_vae.py *")
+    lg.info(" *=============*")
     lg.info(" *")
 #    lg.info(" * Model setup JSON path : %s" % (architecture_file_path))
+    lg.info(" * Reload path           : %s" % (reload_path))
     lg.info(" * Output path           : %s" % (output_path))
     lg.info(" *")
 
@@ -212,7 +215,7 @@ if __name__ == '__main__':
     #every n iterations (set to 0 to disable)
 
     print("*")
-    print("* Beginning training...")
+    print("* Resuming training...")
     print("*")
 
     VAE.train(x = x_train, \
@@ -224,9 +227,27 @@ if __name__ == '__main__':
               stop_iter = 30, \
               print_every = 10, \
               draw_img = 0, \
-              log_dir = LOG_DIR
+              log_dir = LOG_DIR, \
+              load_path = reload_path
              )
 
     print("*")
     print("* Training finished!")
     print("*")
+
+    # Do something with the VAE...
+
+    ## Ten test digits.
+    test_x = x_test[0:10]
+
+    ## The test digits, reconstructed.
+    test_x_ = VAE.vae(test_x)
+
+    # Make the figures of the digits and their reconstructions.
+    for ix in range(10):
+        label_name = get_label_name(y_test[ix])
+        figure_name  = "figure%06d_digit%01d_test" % (ix, label_name)
+        figure_name_ = "figure%06d_digit%01d_testreco" % (ix, label_name)
+        lg.debug("* Making figure '%s'(_reco)..." % (figure_name))
+        justMNIST(test_x[ ix], name=figure_name,  outdir=PLOTS_DIR)
+        justMNIST(test_x_[ix], name=figure_name_, outdir=PLOTS_DIR)
